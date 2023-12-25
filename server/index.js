@@ -3,7 +3,7 @@ const bodyParser = require('body-parser')
 const crypto = require('crypto')
 const cors = require('cors')
 const mongoose = require('mongoose');
-const { publishers } = require('./db');
+// const data = require('./db');
 require('dotenv').config()
 const app = express()
 app.use(bodyParser.json())
@@ -80,8 +80,9 @@ app.delete('/users/:id', async (req, res) => {
     res.send(users);
 });
 
-app.put('/users:id', async (req, res) => {
+app.put('/users/:id', async (req, res) => {
     const{id}=req.params;
+    res.send('salam')
 })
 
 app.patch('/users:id', async (req, res) => {
