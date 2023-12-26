@@ -30,15 +30,15 @@ const PublisherSchema = new mongoose.Schema({
     description: String,
     joinedDate: Date
 });
-// const NewsSchema = new Schema({
-//     title: String,
-//     createdAt: Date,
-//     linkURL: String,
-//     thumbnailImg: String,
-//     newsBody: String
-// })
+const NewsSchema = new mongoose.Schema({
+    title: String,
+    createdAt: Date,
+    linkURL: String,
+    thumbnailImg: String,
+    newsBody: String
+})
 const PublisherModel = mongoose.model('Publisher', PublisherSchema)
-// const NewsModel = mongoose.model('News', NewsSchema)
+const NewsModel = mongoose.model('News', NewsSchema)
 const UserModel = mongoose.model('Users', UserSchema)
 
 
@@ -140,6 +140,54 @@ app.patch('/publishers:id', async (req, res) => {
     res.send(updatedPublisher);
 })
 
+//news
+app.get('/news', async (req, res) => {
+    const{name} = req.query;
+    const news = await NewsModel.find({});
+    if (name) {
+        const filteredNews = news.filter((x)=>x.name.toLowerCase().trim().includes(name.toLowerCase().trim()));
+        res.send(filteredNews);
+    }
+    else{
+        res.send(news);
+    }
+})
+
+app.get('/news/:id', async (req, res) => {
+    const{id}=req.params;
+    const news = await NewsModel.findById(id);
+    if (news) {
+        res.status(200).send(news)
+    }
+    else{
+        res.send({message:'not found'})
+    }
+});
+
+app.post('/news', async (req, res) => {
+    const newNews = new NewsModel(req.body);
+    await newNews.save();
+    res.send(newNews);
+})
+
+app.delete('/news/:id', async (req, res) => {
+    const{id}=req.params;
+    await NewsModel.findByIdAndDelete(id);
+    const news = await NewsModel.find({});
+    res.send(news);
+});
+
+app.put('/news:id', async (req, res) => {
+    const { id } = req.params;
+})
+
+app.patch('/news:id', async (req, res) => {
+    const{id}=req.params;
+    await NewsModel.findByIdAndUpdate(id, req.body);
+    const updatedNews = await NewsModel.findById(id);
+    res.send(updatedNews);
+})
+
 //tags
 // app.get('/tags', (req, res) => {
 //     if (tags.length == 0) {
@@ -220,121 +268,6 @@ app.patch('/publishers:id', async (req, res) => {
 //     const data = tags.find((x) => x.id == id);
 //     if (name !== undefined) {
 //         updatedData.name = name
-//     }
-//     res.send({
-//         message: 'data updated',
-//         data
-//     })
-// })
-
-//news
-// app.get('/news', (req, res) => {
-//     if (news.length == 0) {
-//         res.send({
-//             message: 'empty array'
-//         })
-//     }
-//     else {
-//         res.status(200).send({
-//             message: 'success',
-//             data: news
-//         })
-//     }
-
-// })
-
-// app.get('/news/:id', (req, res) => {
-//     const { id } = req.params;
-//     const data = news.find((x) => x.id === id);
-//     if (data !== undefined) {
-//         res.status(200).send(data);
-//     } else {
-//         res.status(204).send('no data');
-//     }
-// });
-
-// app.post('/news', (req, res) => {
-//     const { title, createdAt, linkURL, thumbnailImg, newsBody } = req.body;
-//     const newNews = {
-//         id: crypto.randomUUID(),
-//         title,
-//         createdAt,
-//         linkURL,
-//         thumbnailImg,
-//         newsBody
-//     }
-//     news.push(newNews)
-//     res.send({
-//         message: 'news posted',
-//         data: newNews
-//     })
-// })
-
-// app.delete('/news/:id', (req, res) => {
-//     const { id } = req.params;
-//     const idx = news.find((x) => x.id === id);
-//     if (idx === undefined) {
-//         res.send({
-//             message: 'no data'
-//         })
-//     }
-//     else {
-//         res.send({
-//             message: 'news deleted',
-//             data: news.splice(idx, 1)
-//         })
-//     }
-
-// });
-
-// app.put('/news:id', (req, res) => {
-//     const { id } = req.params;
-//     const { title, createdAt, linkURL, thumbnailImg, newsBody } = req.body;
-//     const data = news.find((x) => x.id == id);
-//     const updatedData = {
-//         id: data.id
-//     };
-//     if (title !== undefined) {
-//         updatedData.title = title
-//     }
-//     if (createdAt !== undefined) {
-//         updatedData.createdAt = createdAt
-//     }
-//     if (linkURL !== undefined) {
-//         updatedData.linkURL = linkURL
-//     }
-//     if (thumbnailImg !== undefined) {
-//         updatedData.thumbnailImg = thumbnailImg
-//     }
-//     if (newsBody !== undefined) {
-//         updatedData.newsBody = newsBody
-//     }
-//     const idx = news.findIndex((x) => x.id == id);
-//     news[idx] = updatedData;
-//     res.send({
-//         message: 'data updated',
-//         data: updatedData
-//     })
-// })
-
-// app.patch('/users:id', (req, res) => {
-//     const { id } = req.params;
-//     const { title, createdAt, linkURL, thumbnailImg, newsBody } = req.body;
-//     const data = news.find((x) => x.id == id);
-//     if (title !== undefined) {
-//         updatedData.title = title
-//     }
-//     if (createdAt !== undefined) {
-//         updatedData.createdAt = createdAt
-//     }
-//     if (linkURL !== undefined) {
-//         updatedData.linkURL = linkURL
-//     }
-//     if (thumbnailImg !== undefined) {
-//         updatedData.thumbnailImg = thumbnailImg
-//     }
-//     if (newsBody !== undefined) {
-//         updatedData.newsBody = newsBody
 //     }
 //     res.send({
 //         message: 'data updated',
